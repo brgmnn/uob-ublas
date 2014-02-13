@@ -1,10 +1,16 @@
 cc		= gcc
-inc		= 
-cflags	= $(inc) -std=c99 -g -Wfatal-errors -Wall -Wextra
-clibs	= -lcblas
+fc		= gfortran
+
+inc		= -I./src -I../include/plasma
+# clibs	= -L../lib/plasma -lm -lpthread -lrefblas -lcblas -lplasma -lcoreblas -lcoreblasqw -ltmg -llapack -llapacke -lquark 
+clibs	= -L../lib/plasma -lplasma -lcoreblasqw -lcoreblas -lplasma -lquark -lcblas -llapacke -ltmg -llapack -lrefblas -lpthread -lm
+ubopt	= -D WITH_ATLAS
+
+
+# cflags	= $(inc) $(ubopt) -std=c99 -g -Wfatal-errors -Wall -Wextra
+cflags	= $(inc) $(ubopt) -std=c99
 
 src = ublas.c
-
 src_ut = unittests.c
 
 src_dir		= src
@@ -16,17 +22,18 @@ obj_all		= $(obj) $(obj_ut)
 
 
 all: build-source link-unittests pack-library
+# all: build-source
 
 build-source: $(obj_all)
 
 link-unittests: $(obj_ut)
-	$(cc) $(obj_ut) -o unittests $(clibs)
+	$(fc) $(obj_ut) -o unittests $(clibs)
 
 pack-library:
 	ar -r libublas.a $(obj)
 
-$(obj_dir)/%.o: $(src_dir)/%.c 
+$(obj_dir)/%.o: $(src_dir)/%.cpp
 	$(cc) -c $(cflags) -o $@ $<
 
 clean:
-	rm -f $(obj)
+	rm -f $(obj_all)
