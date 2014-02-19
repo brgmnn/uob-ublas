@@ -1,8 +1,8 @@
 cc		= gcc
 fc		= gfortran
 
-inc		= -I./src
-clibs	=
+inc		= -I./src -I./../include/simple-profiler
+clibs	= -L./../lib/simple-profiler -lsimpleprofiler
 cflags	= $(inc) -std=c99
 # cflags	= $(inc) $(ubopt) -std=c99 -g -Wfatal-errors -Wall -Wextra
 
@@ -12,6 +12,7 @@ cflags	= $(inc) -std=c99
 #---------------------------------------------------------------------------------------------------
 # ATLAS configuration
 atlas_flags	= -D WITH_ATLAS
+# atlas_flags	= 
 atlas_libs	= -lcblas
 cflags += $(atlas_flags)
 clibs += $(atlas_libs)
@@ -19,6 +20,7 @@ clibs += $(atlas_libs)
 
 # PLASMA configuration
 plasma_flags	= -D WITH_PLASMA -I../include/plasma
+# plasma_flags	= 
 plasma_libs		= -L../lib/plasma -lplasma -lcoreblasqw -lcoreblas -lplasma -lquark -lcblas \
 	-llapacke -ltmg -llapack -lrefblas -lpthread -lm
 cflags += $(plasma_flags)
@@ -29,8 +31,8 @@ clibs += $(plasma_libs)
 # cflags	= $(inc) -std=c99
 # clibs	= $(clibs_atlas) $(clibs_plasma)
 
-src		= ublas.c
-src_t	= accuracy.c
+src		= ublas.c ublas_lib_cblas.c ublas_lib_plasma.c
+src_t	= accuracy.c measure.c
 src_ut	= unittests.c
 
 src_dir		= src
