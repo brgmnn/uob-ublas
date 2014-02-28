@@ -8,14 +8,18 @@ set(with-plasma 1)
 add_definitions(-std=c99)
 
 
+set(env-inc $ENV{INCLUDE})
+set(env-lib $ENV{LD_LIBRARY_PATH})
+string(REPLACE ":" ";" env-inc "${einc}")
+string(REPLACE ":" ";" env-lib "${elib}")
 include_directories(
     src
     ../include/simple-profiler
-    $ENV{INCLUDE}
+    ${env-inc}
 )
 link_directories(
     ../lib/simple-profiler
-    $ENV{LD_LIBRARY_PATH}
+    ${env-lib}
 )
 
 set(ublas-src src/ublas.c)
