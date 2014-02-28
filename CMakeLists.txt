@@ -8,8 +8,15 @@ set(with-plasma 1)
 add_definitions(-std=c99)
 
 
-include_directories(src ../include/simple-profiler)
-link_directories(../lib/simple-profiler)
+include_directories(
+    src
+    ../include/simple-profiler
+    $ENV{INCLUDE}
+)
+link_directories(
+    ../lib/simple-profiler
+    $ENV{LD_LIBRARY_PATH}
+)
 
 set(ublas-src src/ublas.c)
 
