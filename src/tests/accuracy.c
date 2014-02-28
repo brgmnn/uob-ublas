@@ -17,27 +17,20 @@ int main() {
 	printf("uBLAS Accuracy Tests\n");
 
 
-	// double da[4] = {1.0, 3.0, 4.0, 2.0};
-	// double db[4] = {1.0, 0.0, 0.0, 1.0};
-	// double dc[4] = {0.0, 0.0, 0.0, 0.0};
+	double da[4] = {1.0, 3.0, 4.0, 2.0};
+	double db[4] = {1.0, 0.0, 0.0, 1.0};
+	double dc[4] = {0.0, 0.0, 0.0, 0.0};
 
-	// ublas_matrix *a = ublas_new_matrix(2, 2, da, DOUBLE);
-	// ublas_matrix *b = ublas_new_matrix(2, 2, db, DOUBLE);
-	// ublas_matrix *c = ublas_new_matrix(2, 2, dc, DOUBLE);
+	ublas_matrix *a = ublas_new_matrix(2, 2, da, DOUBLE);
+	ublas_matrix *b = ublas_new_matrix(2, 2, db, DOUBLE);
+	ublas_matrix *c = ublas_new_matrix(2, 2, dc, DOUBLE);
 
-	// sp_start_timer(tp);
-	// ublas_gemm(a, b, c, 1.0, 0.0);
-	// printf("time taken was: %f s\n", sp_stop_timer(tp));
+	sp_start_timer(tp);
+	ublas_gemm(a, b, c, 1.0, 0.0);
+	printf("time taken was: %f s\n", sp_stop_timer(tp));
 
-	int trials = 100;
-
-	double *a, *b, *c;
-	a = malloc(trials*trials*sizeof(double));
-	b = malloc(trials*trials*sizeof(double));
-	c = malloc(trials*trials*sizeof(double));
-
-	for (int t=0; t<trials; t++) {
-
+	for (int i=0; i<4; i++) {
+		printf("%d\n", dc[i]);
 	}
 
 	ublas_free();

@@ -1,7 +1,7 @@
 #include <ublas_lib_cblas.h>
 
 int _ubl_cblas_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, double beta) {
-	printf("using atlas\n");
+	// printf("using atlas\n");
 	ublas_type type = a->type;
 
 	if (type == SINGLE)
