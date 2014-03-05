@@ -50,8 +50,12 @@ endif()
 
 
 add_executable(measure src/tests/measure.c)
+add_executable(accuracy src/tests/accuracy.c)
+
 target_link_libraries(measure simpleprofiler ublas)
+target_link_libraries(accuracy simpleprofiler ublas)
 if (${with-plasma})
     set_target_properties(measure PROPERTIES LINKER_LANGUAGE Fortran)
+    set_target_properties(accuracy PROPERTIES LINKER_LANGUAGE Fortran)
 endif()
 

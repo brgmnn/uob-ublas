@@ -17,20 +17,20 @@ int main() {
 	printf("uBLAS Accuracy Tests\n");
 
 
-	double da[4] = {1.0, 3.0, 4.0, 2.0};
-	double db[4] = {1.0, 0.0, 0.0, 1.0};
-	double dc[4] = {0.0, 0.0, 0.0, 0.0};
+	float da[4] = {1.0f, 3.0f, 4.0f, 2.0f};
+	float db[4] = {1.0f, 0.0f, 0.0f, 1.0f};
+	float dc[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 
-	ublas_matrix *a = ublas_new_matrix(2, 2, da, DOUBLE);
-	ublas_matrix *b = ublas_new_matrix(2, 2, db, DOUBLE);
-	ublas_matrix *c = ublas_new_matrix(2, 2, dc, DOUBLE);
+	ublas_matrix *a = ublas_new_matrix(2, 2, da, SINGLE);
+	ublas_matrix *b = ublas_new_matrix(2, 2, db, SINGLE);
+	ublas_matrix *c = ublas_new_matrix(2, 2, dc, SINGLE);
 
 	sp_start_timer(tp);
 	ublas_gemm(a, b, c, 1.0, 0.0);
 	printf("time taken was: %f s\n", sp_stop_timer(tp));
 
 	for (int i=0; i<4; i++) {
-		printf("%d\n", dc[i]);
+		printf("%f\n", dc[i]);
 	}
 
 	ublas_free();

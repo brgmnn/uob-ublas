@@ -29,25 +29,26 @@ int main() {
 	// ublas_gemm(a, b, c, 1.0, 0.0);
 	// printf("time taken was: %f s\n", sp_stop_timer(tp));
 
-	int msize = 12;
-	int mul = 1000;
+	int msize = 1000;
+	int mul = 1;
+	int avgsize = 10;
 
 	int bc_cblas = 0;
 	int bc_plasma = 0;
-	double *da, *db, *dc, t_cblas, t_plasma;
-	da = malloc(mul*mul*msize*msize*sizeof(double));
-	db = malloc(mul*mul*msize*msize*sizeof(double));
-	dc = malloc(mul*mul*msize*msize*sizeof(double));
+	float *da, *db, *dc, t_cblas, t_plasma;
+	da = malloc(mul*mul*msize*msize*sizeof(float));
+	db = malloc(mul*mul*msize*msize*sizeof(float));
+	dc = malloc(mul*mul*msize*msize*sizeof(float));
 
-	ublas_matrix *a = ublas_new_matrix(2, 2, da, DOUBLE);
-	ublas_matrix *b = ublas_new_matrix(2, 2, db, DOUBLE);
-	ublas_matrix *c = ublas_new_matrix(2, 2, dc, DOUBLE);
+	ublas_matrix *a = ublas_new_matrix(2, 2, da, SINGLE);
+	ublas_matrix *b = ublas_new_matrix(2, 2, db, SINGLE);
+	ublas_matrix *c = ublas_new_matrix(2, 2, dc, SINGLE);
 
 
 
 	// for (int x=0; x<msize-2; x++) {
 	// 	for (int y=0; y<msize-2; y++) {
-	int x, y;
+	int x, y, m;
 	for (x=1, y=1; x<=msize, y<=msize; x++, y++) {
 			printf("x=%4d y=%4d: ", mul*x, mul*y);
 			fflush(stdout);
@@ -63,14 +64,18 @@ int main() {
 			settings.library = UBL_CBLAS;
 
 			sp_start_timer(tp);
-			ublas_gemm(a, b, c, 1.0, 0.0);
-			printf("cblas = %fs, ", t_cblas = sp_stop_timer(tp));
+			for (m=0; m<avgsize; m++)
+				ublas_gemm(a, b, c, 1.0, 0.0);
+			printf("cblas = %fs, ", t_cblas = (sp_stop_timer(tp)/avgsize));
 
 			settings.library = UBL_PLASMA;
 
 			sp_start_timer(tp);
-			ublas_gemm(a, b, c, 1.0, 0.0);
-			printf("plasma = %fs\n", t_plasma = sp_stop_timer(tp));
+			for (m=0; m<avgsize; m++)
+				ublas_gemm(a, b, c, 1.0, 0.0);
+			printf("plasma = %fs\n", t_plasma = (sp_stop_timer(tp)/avgsize));
+
+			fprintf(stderr, "%f,%f\n", t_cblas, t_plasma);
 
 			if (t_cblas < t_plasma)
 				bc_cblas++;
