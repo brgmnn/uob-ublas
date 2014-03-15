@@ -1,6 +1,8 @@
 #ifndef UBLAS_TYPES_H
 #define UBLAS_TYPES_H
 
+#include <fann.h>
+
 typedef enum {
 	SINGLE,
 	DOUBLE,
@@ -19,7 +21,9 @@ typedef enum {
 
 typedef struct {
 	int cores; // select number of cores.
-	ublas_library library; // force a library to use. UBL_AUTO lets ublas choose. 
+	ublas_library library; // force a library to use. UBL_AUTO lets ublas choose.
+
+	struct fann *ann; // neural network handle
 } ublas_settings;
 
 typedef struct {

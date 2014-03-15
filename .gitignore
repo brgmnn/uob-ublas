@@ -1,5 +1,13 @@
+# Binaries, object code and library packages.
 *.o
 *.a
 unittests
 accuracy
 build
+
+# Backup files.
+*.bak
+
+# Neural Network generated files. These are machine specific.
+*.data
+*.net

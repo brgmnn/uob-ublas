@@ -7,6 +7,8 @@ void ublas_init(ublas_settings *settings) {
 	#ifdef WITH_PLASMA
 		PLASMA_Init(settings->cores);
 	#endif
+
+	settings->ann = fann_create_from_file("../atlas-plasma-float.net");
 }
 
 void ublas_free() {
@@ -37,6 +39,16 @@ int ublas_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, 
 		// 	return _ubl_plasma_gemm(a, b, c, alpha, beta);
 		// else
 		// 	return _ubl_cblas_gemm(a, b, c, alpha, beta);
+
+		fann_type input[2];
+		input[0] = c->cols;
+		input[1] = c->rows;
+		fann_type *calc_out = fann_run(_ub_settings->ann, input);
+
+		if (calc_out[0] > calc_out[1])
+			return _ubl_cblas_gemm(a, b, c, alpha, beta);
+		else
+			return _ubl_plasma_gemm(a, b, c, alpha, beta);
 	}
 
 #if defined(WITH_ATLAS)

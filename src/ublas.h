@@ -15,7 +15,9 @@
 #include <ublas_lib_plasma.h>
 #endif
 
+#include <lib/tpl.h>
 #include <ublas_types.h>
+#include <floatfann.h>
 
 extern ublas_settings *_ub_settings;
 

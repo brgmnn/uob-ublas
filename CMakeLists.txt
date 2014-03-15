@@ -5,7 +5,7 @@ project(uBLAS)
 
 set(with-atlas 1)
 set(with-plasma 1)
-add_definitions(-std=c99)
+add_definitions(-std=gnu99)
 
 
 set(env-inc $ENV{INCLUDE})
@@ -15,14 +15,21 @@ string(REPLACE ":" ";" env-lib "${elib}")
 include_directories(
     src
     ../include/simple-profiler
+    ~/.include
     ${env-inc}
 )
 link_directories(
     ../lib/simple-profiler
+    ~/.lib
     ${env-lib}
 )
 
-set(ublas-src src/ublas.c)
+set(ublas-src
+    src/ublas.c
+    src/utils.c
+    src/ml/nn.c
+    src/lib/tpl.c
+)
 
 if (${with-atlas})
     list(APPEND ublas-src src/ublas_lib_cblas.c)
@@ -39,8 +46,8 @@ if (${with-atlas})
     target_link_libraries(ublas cblas)
 endif()
 
+
 if (${with-plasma})
-    # set(CMAKE_Fortran_LINK_EXECUTABLE gfortran)
     enable_language(Fortran)
     add_definitions(-D WITH_PLASMA)
     include_directories(../include/plasma)
@@ -52,10 +59,19 @@ endif()
 add_executable(measure src/tests/measure.c)
 add_executable(accuracy src/tests/accuracy.c)
 
-target_link_libraries(measure simpleprofiler ublas)
-target_link_libraries(accuracy simpleprofiler ublas)
+add_executable(train-fann src/tools/train-fann.c)
+add_executable(test-fann src/tools/test-fann.c)
+
+target_link_libraries(measure simpleprofiler ublas fann)
+target_link_libraries(accuracy simpleprofiler ublas fann)
+target_link_libraries(train-fann simpleprofiler ublas fann)
+target_link_libraries(test-fann simpleprofiler ublas fann)
+
+
 if (${with-plasma})
     set_target_properties(measure PROPERTIES LINKER_LANGUAGE Fortran)
     set_target_properties(accuracy PROPERTIES LINKER_LANGUAGE Fortran)
+    set_target_properties(train-fann PROPERTIES LINKER_LANGUAGE Fortran)
+    set_target_properties(test-fann PROPERTIES LINKER_LANGUAGE Fortran)
 endif()
 

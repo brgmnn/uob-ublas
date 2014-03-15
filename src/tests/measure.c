@@ -17,18 +17,6 @@ int main() {
 	printf("uBLAS Accuracy Tests\n");
 
 
-	// double da[4] = {1.0, 3.0, 4.0, 2.0};
-	// double db[4] = {1.0, 0.0, 0.0, 1.0};
-	// double dc[4] = {0.0, 0.0, 0.0, 0.0};
-
-	// ublas_matrix *a = ublas_new_matrix(2, 2, da, DOUBLE);
-	// ublas_matrix *b = ublas_new_matrix(2, 2, db, DOUBLE);
-	// ublas_matrix *c = ublas_new_matrix(2, 2, dc, DOUBLE);
-
-	// sp_start_timer(tp);
-	// ublas_gemm(a, b, c, 1.0, 0.0);
-	// printf("time taken was: %f s\n", sp_stop_timer(tp));
-
 	int msize = 1000;
 	int mul = 1;
 	int avgsize = 10;
@@ -45,11 +33,15 @@ int main() {
 	ublas_matrix *c = ublas_new_matrix(2, 2, dc, SINGLE);
 
 
+	FILE *f = fopen("../atlas-plasma.data", "w");
 
 	// for (int x=0; x<msize-2; x++) {
 	// 	for (int y=0; y<msize-2; y++) {
+
+	fprintf(f, "%d 2 2\n", msize/4);
+
 	int x, y, m;
-	for (x=1, y=1; x<=msize, y<=msize; x++, y++) {
+	for (x=1, y=1; x<=msize, y<=msize; x+=4, y+=4) {
 			printf("x=%4d y=%4d: ", mul*x, mul*y);
 			fflush(stdout);
 
@@ -76,11 +68,21 @@ int main() {
 			printf("plasma = %fs\n", t_plasma = (sp_stop_timer(tp)/avgsize));
 
 			fprintf(stderr, "%f,%f\n", t_cblas, t_plasma);
+			// fprintf(f, "%f %f\n", 2*((double)x/msize)-1, 2*((double)y/msize)-1);
+			fprintf(f, "%d %d\n", x, y);
 
-			if (t_cblas < t_plasma)
+			if (t_cblas < t_plasma) {
 				bc_cblas++;
-			else
+				fprintf(f, "1 -1\n");
+			} else {
 				bc_plasma++;
+				fprintf(f, "-1 1\n");
+			}
+
+			// if (x < msize/2)
+			// 	fprintf(f, "1 -1\n");
+			// else
+			// 	fprintf(f, "-1 1\n");
 	}
 	// 	}
 	// }
