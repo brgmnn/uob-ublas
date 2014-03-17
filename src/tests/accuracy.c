@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <simple-profiler.h>
+#include <spflr/simple-profiler.h>
 #include <ublas.h>
 #include <floatfann.h>
 
@@ -9,7 +9,7 @@ sp_profile_t* tp;
 
 int main() {
 	tp = sp_create_profile();
-	
+
 	ublas_settings settings;
 	settings.cores = 4;
 	settings.library = UBL_PLASMA;
@@ -44,7 +44,7 @@ int main() {
 	fann_type *calc_out;
 	fann_type input[2];
 
-	struct fann *ann = fann_create_from_file("../atlas-plasma-float.net");
+//	struct fann *ann = fann_create_from_file("../atlas-plasma-float.net");
 
 	int x, y, m;
 	for (x=1, y=1; x<=msize, y<=msize; x+=4, y+=4) {
@@ -75,7 +75,7 @@ int main() {
 				ublas_gemm(a, b, c, 1.0, 0.0);
 			printf("plasma = %fs, ", t_plasma = (sp_stop_timer(tp)/avgsize));
 
-			settings.library = UBL_AUTO;
+			/*settings.library = UBL_AUTO;
 
 			sp_start_timer(tp);
 			for (m=0; m<avgsize; m++)
@@ -83,6 +83,10 @@ int main() {
 			printf("ublas = %fs\n", t_ublas = (sp_stop_timer(tp)/avgsize));
 
 			fprintf(stderr, "%f,%f,%f\n", t_cblas, t_plasma, t_ublas);
+
+            */
+
+            printf("\n");
 
 			// calc_out = fann_run(ann, input);
 

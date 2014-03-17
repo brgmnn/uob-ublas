@@ -4,14 +4,12 @@ cmake_policy(SET CMP0015 NEW)
 project(uBLAS)
 
 set(with-atlas 1)
-set(with-plasma 1)
+# set(with-plasma 1)
 add_definitions(-std=gnu99)
 
 
-set(env-inc $ENV{INCLUDE})
-set(env-lib $ENV{LD_LIBRARY_PATH})
-string(REPLACE ":" ";" env-inc "${einc}")
-string(REPLACE ":" ";" env-lib "${elib}")
+string(REPLACE ":" ";" env-inc "$ENV{INCLUDE}")
+string(REPLACE ":" ";" env-lib "$ENV{LD_LIBRARY_PATH}")
 include_directories(
     src
     ../include/simple-profiler
@@ -27,7 +25,6 @@ link_directories(
 set(ublas-src
     src/ublas.c
     src/utils.c
-    src/ml/nn.c
     src/lib/tpl.c
 )
 
@@ -43,7 +40,7 @@ add_library(ublas STATIC ${ublas-src})
 
 if (${with-atlas})
     add_definitions(-D WITH_ATLAS)
-    target_link_libraries(ublas cblas)
+    target_link_libraries(ublas cblas atlas)
 endif()
 
 

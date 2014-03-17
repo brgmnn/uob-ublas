@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <simple-profiler.h>
+#include <spflr/simple-profiler.h>
 #include <ublas.h>
 
 sp_profile_t* tp;
 
 int main() {
 	tp = sp_create_profile();
-	
+
 	ublas_settings settings;
 	settings.cores = 4;
 	settings.library = UBL_PLASMA;
@@ -80,7 +80,8 @@ int main() {
 			}
 
 			// if (x < msize/2)
-			// 	fprintf(f, "1 -1\n");
+
+    // 	fprintf(f, "1 -1\n");
 			// else
 			// 	fprintf(f, "-1 1\n");
 	}

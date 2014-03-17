@@ -47,8 +47,8 @@ int ublas_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, 
 
 		if (calc_out[0] > calc_out[1])
 			return _ubl_cblas_gemm(a, b, c, alpha, beta);
-		else
-			return _ubl_plasma_gemm(a, b, c, alpha, beta);
+		// else
+		// 	return _ubl_plasma_gemm(a, b, c, alpha, beta);
 	}
 
 #if defined(WITH_ATLAS)
