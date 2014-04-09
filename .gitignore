@@ -1,12 +1,14 @@
 # Binaries, object code and library packages.
 *.o
 *.a
+*.so
 unittests
 accuracy
 build
 
-# Backup files.
+# Backup files, hidden files etc.
 *.bak
+.*
 
 # Neural Network generated files. These are machine specific.
 *.data

@@ -1,6 +1,10 @@
-#include <ublas_lib_cblas.h>
+#include <atlas.h>
 
-int _ubl_cblas_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, double beta) {
+int ubf_init() {
+	return 0;
+}
+
+int ubf_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, double beta) {
 	// printf("using atlas\n");
 	ublas_type type = a->type;
 
