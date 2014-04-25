@@ -5,7 +5,8 @@
 #include <ublas_types.h>
 #include <cblas.h>
 
-int ubf_init();
-int ubf_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, double beta);
+int ubf_init(void **ctx);
+int ubf_gemm(void *ctx, ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, double beta);
+int ubf_free(void *ctx);
 
 #endif

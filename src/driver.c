@@ -15,6 +15,12 @@ func* ublas_load_driver(char* path) {
 		exit(1);
 	}
 
+	api[UBF_FREE] = dlsym(lib, "ubf_free");
+	if (!api[UBF_FREE]) {
+		printf("Error loading symbol: %s\n", dlerror());
+		exit(1);
+	}
+
 	api[UBF_GEMM] = dlsym(lib, "ubf_gemm");
 	if (!api[UBF_GEMM]) {
 		printf("Error loading symbol: %s\n", dlerror());

@@ -1,10 +1,11 @@
 #include <atlas.h>
 
-int ubf_init() {
+int ubf_init(void **ctx) {
+	*ctx = NULL;
 	return 0;
 }
 
-int ubf_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, double beta) {
+int ubf_gemm(void *ctx, ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, double beta) {
 	// printf("using atlas\n");
 	ublas_type type = a->type;
 
@@ -17,5 +18,9 @@ int ubf_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, do
 			a->cols, 1.0, (double*)a->cells, a->cols, (double*)b->cells, b->cols, 0.0,
 			(double*)c->cells, c->cols);
 
+	return 0;
+}
+
+int ubf_free(void *context) {
 	return 0;
 }

@@ -38,6 +38,7 @@ typedef enum {
 
 typedef enum {
 	UBF_INIT,	// initialisation function
+	UBF_FREE,	// cleanup function
 	UBF_GEMM,	// matrix matrix multiplication
 
 	UBF_COUNT
@@ -53,6 +54,7 @@ typedef struct {
 
 	// function array.
 	func **call;
+	void **libctx;
 
 #if defined(WITH_ATLAS)
 	func call_atlas;

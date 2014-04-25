@@ -5,6 +5,7 @@ cmake_policy(SET CMP0012 OLD)
 project(uBLAS)
 
 option(with-atlas "Atlas" On)
+option(with-cublas "CuBLAS" Off)
 option(with-mkl "MKL" Off)
 option(with-plasma "Plasma" Off)
 add_definitions(-std=gnu99)
@@ -17,6 +18,7 @@ include_directories(
     ../include/simple-profiler
     ~/include
     ${env-inc}
+    $ENV{INCLUDEPATH}
 )
 link_directories(
     ../lib/simple-profiler
@@ -27,16 +29,23 @@ link_directories(
 set(ublas-src
     src/ublas.c
 	src/driver.c
+    src/matrix.c
+    src/tests.c
     src/utils.c
     src/lib/tpl.c
 )
 
 add_library(ublas STATIC ${ublas-src})
-target_link_libraries(ublas dl)
+target_link_libraries(ublas dl fann)
 
 if (${with-atlas} MATCHES ON)
     add_definitions(-D WITH_ATLAS)
 	add_subdirectory(src/drivers/atlas)
+endif()
+
+if (${with-cublas} MATCHES ON)
+    add_definitions(-D WITH_CUBLAS)
+    add_subdirectory(src/drivers/cublas)
 endif()
 
 if (${with-mkl} MATCHES ON)
@@ -46,6 +55,7 @@ endif()
 
 if (${with-plasma} MATCHES ON)
     add_definitions(-D WITH_PLASMA)
+    add_subdirectory(src/drivers/plasma)
 endif()
 
 
@@ -57,16 +67,15 @@ if (${with-plasma} MATCHES ON)
     # target_link_libraries(ublas plasma coreblasqw coreblas plasma quark cblas lapacke tmg lapack refblas pthread m)
 endif()
 
-#add_executable(measure src/tests/measure.c)
+
 add_executable(accuracy src/tests/accuracy.c)
-
 add_executable(train-fann src/tools/train-fann.c)
-#add_executable(test-fann src/tools/test-fann.c)
+add_executable(unittests src/unittests/unittests.c)
 
-#target_link_libraries(measure simpleprofiler ublas fann)
-target_link_libraries(accuracy simpleprofiler ublas fann)
-target_link_libraries(train-fann simpleprofiler ublas fann)
-#target_link_libraries(test-fann simpleprofiler ublas fann)
+
+target_link_libraries(accuracy simpleprofiler ublas)
+target_link_libraries(train-fann simpleprofiler ublas)
+target_link_libraries(unittests ublas)
 
 
 if (${with-plasma} MATCHES ON)

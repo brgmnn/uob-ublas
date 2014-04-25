@@ -1,122 +1,105 @@
-#include <pthread.h>
-
-#include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
-#include <math.h>
+#include <sput.h>
+#include <ublas.h>
 
-#include <plasma.h>
-#include <cblas.h>
-#include <lapacke.h>
-#include <core_blas.h>
+ublas_settings settings;
 
-int check_solution(int, int , double *, int, double *, double *, int);
+static int count_vowels(const char *s) {
+	const char *cp = s;
+	int count = 0;
 
-int IONE=1;
-int ISEED[4] = {0,0,0,1};   /* initial seed for dlarnv() */
-
-int main ()
-{
-    printf("hello\n");
-
-    int cores = 2;
-    int N     = 10;
-    int LDA   = 10;
-    int NRHS  = 5;
-    int LDB   = 10;
-    int info;
-    int info_solution;
-    int i,j;
-    int LDAxN = LDA*N;
-    int LDBxNRHS = LDB*NRHS;
-
-    double *A1 = (double *)malloc(LDA*N*(sizeof*A1));
-    double *A2 = (double *)malloc(LDA*N*(sizeof*A2));
-    double *B1 = (double *)malloc(LDB*NRHS*(sizeof*B1));
-    double *B2 = (double *)malloc(LDB*NRHS*(sizeof*B2));
-    PLASMA_desc *L;
-    int *IPIV;
-
-    /* Check if unable to allocate memory */
-    if ((!A1)||(!A2)||(!B1)||(!B2)){
-        printf("Out of Memory \n ");
-        return EXIT_SUCCESS;
-    }
-
-    /*Plasma Initialize*/
-    PLASMA_Init(cores);
-    printf("-- PLASMA is initialized to run on %d cores. \n",cores);
-
-    /* Initialize A1 and A2 Matrix */
-    LAPACKE_dlarnv_work(IONE, ISEED, LDAxN, A1);
-    for ( i = 0; i < N; i++)
-        for (  j = 0; j < N; j++)
-            A2[LDA*j+i] = A1[LDA*j+i];
-
-    /* Initialize B1 and B2 */
-    LAPACKE_dlarnv_work(IONE, ISEED, LDBxNRHS, B1);
-    for ( i = 0; i < N; i++)
-        for ( j = 0; j < NRHS; j++)
-            B2[LDB*j+i] = B1[LDB*j+i];
-
-    /* PLASMA DGESV */
-    info = PLASMA_Alloc_Workspace_dgesv_incpiv(N, &L, &IPIV);
-    info = PLASMA_dgesv_incpiv(N, NRHS, A2, LDA, L, IPIV, B2, LDB);
-
-    /* Check the factorization and the solution */
-    info_solution = check_solution(N, NRHS, A1, LDA, B1, B2, LDB);
-
-    if ((info_solution != 0)|(info != 0))
-       printf("-- Error in DGESV example ! \n");
-    else
-       printf("-- Run of DGESV example successful ! \n");
-
-    free(A1); free(A2); free(B1); free(B2); free(IPIV); free(L);
-
-    PLASMA_Finalize();
-
-    // return EXIT_SUCCESS;
-    return 0;
+	while (*cp) {
+		if (*cp == 'a' || *cp == 'e' || *cp == 'i' || *cp == 'o' || *cp == 'u')
+			count++;
+		cp++;
+	}
+	return count;
 }
 
-/*------------------------------------------------------------------------
- *  Check the accuracy of the solution of the linear system
- */
+// static void test_vowels_present() {
+// 	sput_fail_unless(count_vowels("book")  == 2, "book == 2v");
+// 	sput_fail_unless(count_vowels("hand")  == 1, "hand == 1v");
+// 	sput_fail_unless(count_vowels("test")  == 1, "test == 1v");
+// 	sput_fail_unless(count_vowels("Peter") == 2, "Peter == 2v");
+// 	sput_fail_unless(count_vowels("Apu")   == 2, "Apu == 2v");
+// }
 
-int check_solution(int N, int NRHS, double *A1, int LDA, double *B1, double *B2, int LDB)
-{
-    int info_solution;
-    double Rnorm, Anorm, Xnorm, Bnorm;
-    double alpha, beta;
-    double *work = (double *)malloc(N*sizeof(double));
-    double eps;
+// static void test_no_vowels_present() {
+// 	sput_fail_unless(count_vowels("GCC") == 0, "GCC == 0v");
+// 	sput_fail_unless(count_vowels("BBC") == 0, "BBC == 0v");
+// 	sput_fail_unless(count_vowels("CNN") == 0, "CNN == 0v");
+// 	sput_fail_unless(count_vowels("GPS") == 0, "GPS == 0v");
+// 	sput_fail_unless(count_vowels("Ltd") == 0, "Ltd == 0v");
+// }
 
-    eps = LAPACKE_dlamch_work('e');
+static void test_matrix_equal() {
+	float da[4]  = {1.0f, 3.0f, 4.0f, 2.0f};
+	float db[4]  = {1.0f, 3.0f, 2.0f, 4.0f};
+	float da2[4] = {1.0f, 3.0f, 4.0f, 2.0f};
 
-    alpha = 1.0;
-    beta  = -1.0;
+	ublas_matrix *a = ublas_new_matrix(2, 2, da, SINGLE),
+		*b = ublas_new_matrix(2, 2, db, SINGLE),
+		*a2 = ublas_new_matrix(2, 2, da2, SINGLE);
 
-    Xnorm = LAPACKE_dlange_work(LAPACK_COL_MAJOR, lapack_const(PlasmaInfNorm), N, NRHS, B2, LDB, work);
-    Anorm = LAPACKE_dlange_work(LAPACK_COL_MAJOR, lapack_const(PlasmaInfNorm), N, N, A1, LDA, work);
-    Bnorm = LAPACKE_dlange_work(LAPACK_COL_MAJOR, lapack_const(PlasmaInfNorm), N, NRHS, B1, LDB, work);
+	sput_fail_unless(ublas_matrix_equal(a, b) == 3, "equal(a, b) == 3");
+	sput_fail_unless(ublas_matrix_equal(b, b) == 0, "equal(b, b) == 0");
+	sput_fail_unless(ublas_matrix_equal(a, a2) == 0, "equal(a, a2) == 0");
+}
 
-    cblas_dgemm(CblasColMajor, CblasNoTrans, CblasNoTrans, N, NRHS, N, (alpha), A1, LDA, B2, LDB, (beta), B1, LDB);
-    Rnorm = LAPACKE_dlange_work(LAPACK_COL_MAJOR, lapack_const(PlasmaInfNorm), N, NRHS, B1, LDB, work);
+static void test_gemm() {
+	float da[4] = {1.0f, 3.0f, 4.0f, 2.0f};
+	float db[4] = {2.0f, 0.0f, 0.0f, 2.0f};
+	float dc[4];
+	float dbenchmark[4] = {2.0f, 6.0f, 8.0f, 4.0f};
 
-    printf("============\n");
-    printf("Checking the Residual of the solution \n");
-    printf("-- ||Ax-B||_oo/((||A||_oo||x||_oo+||B||_oo).N.eps) = %e \n",Rnorm/((Anorm*Xnorm+Bnorm)*N*eps));
+	ublas_matrix *a = ublas_new_matrix(2, 2, da, SINGLE),
+		*b = ublas_new_matrix(2, 2, db, SINGLE),
+		*c = ublas_new_matrix(2, 2, dc, SINGLE),
+		*benchmark = ublas_new_matrix(2, 2, dbenchmark, SINGLE);
 
-    if ( isnan(Rnorm/((Anorm*Xnorm+Bnorm)*N*eps)) || (Rnorm/((Anorm*Xnorm+Bnorm)*N*eps) > 10.0) ){
-        printf("-- The solution is suspicious ! \n");
-        info_solution = 1;
-    }
-    else{
-        printf("-- The solution is CORRECT ! \n");
-        info_solution = 0;
-    }
+#if defined(WITH_ATLAS)
+	settings.library = UBL_ATLAS;
+	ublas_gemm(a, b, c, 1.0, 0.0);
+	sput_fail_unless(ublas_matrix_equal(c, benchmark) == 0, "ATLAS multiply.");
+#endif
+#if defined(WITH_CUBLAS)
+	settings.library = UBL_CUBLAS;
+	ublas_gemm(a, b, c, 1.0, 0.0);
+	sput_fail_unless(ublas_matrix_equal(c, benchmark) == 0, "CuBLAS multiply.");
+#endif
+#if defined(WITH_MKL)
+	settings.library = UBL_MKL;
+	ublas_gemm(a, b, c, 1.0, 0.0);
+	sput_fail_unless(ublas_matrix_equal(c, benchmark) == 0, "MKL multiply.");
+#endif
+#if defined(WITH_PLASMA)
+	settings.library = UBL_PLASMA;
+	ublas_gemm(a, b, c, 1.0, 0.0);
+	sput_fail_unless(ublas_matrix_equal(c, benchmark) == 0, "PLASMA multiply.");
+#endif
 
-    free(work);
+}
 
-    return info_solution;
+int main(int argc, char *argv[]) {
+	settings.cores = 16;
+	settings.library = UBL_AUTO;
+	ublas_init(&settings);
+
+	sput_start_testing();
+
+	// sput_enter_suite("count_vowels(): Vowels Present");
+	// sput_run_test(test_vowels_present);
+
+	// sput_enter_suite("count_vowels(): No Vowels Present");
+	// sput_run_test(test_no_vowels_present);
+
+	sput_enter_suite("Matrix Operations: Equality");
+	sput_run_test(test_matrix_equal);
+
+	sput_enter_suite("BLAS Operations: GEMM");
+	sput_run_test(test_gemm);
+
+	sput_finish_testing();
+
+	return sput_get_return_value();
 }
