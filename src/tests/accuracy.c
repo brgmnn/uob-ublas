@@ -131,10 +131,10 @@ int main() {
 
 
 		fprintf(f, "%d %d\n", mul*x, mul*y);
-		if (fmax(t_atlas, t_mkl) == t_mkl)
-			fprintf(f, "-1 1\n");
-		else
-			fprintf(f, "1 -1\n");
+		// if (fmax(t_atlas, t_mkl) == t_mkl)
+		// 	fprintf(f, "-1 1\n");
+		// else
+		// 	fprintf(f, "1 -1\n");
 		// if (fmin(t_atlas, t_gotoblas) == t_atlas && fmin(t_atlas, t_mkl) == t_atlas)
 		// 	fprintf(f, "1 -1 -1\n");
 		// else if (fmin(t_gotoblas, t_atlas) == t_gotoblas && fmin(t_gotoblas, t_mkl) == t_gotoblas)

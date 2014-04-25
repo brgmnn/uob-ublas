@@ -10,19 +10,19 @@ void ublas_init(ublas_settings *settings) {
 
 #if defined(WITH_ATLAS)
 	// settings->call_atlas = ublas_load_atlas("path/to/atlas");
-	settings->call[UBL_ATLAS] = ublas_load_driver("/panfs/panasas01/cosc/db0763/ublas/build/src/drivers/atlas/libublas-driver-atlas.so");
+	settings->call[UBL_ATLAS] = ublas_load_driver("./src/drivers/atlas/libublas-driver-atlas.so");
 	settings->call[UBL_ATLAS][UBF_INIT](&settings->libctx[UBL_ATLAS]);
 #endif
 #if defined(WITH_CUBLAS)
-	settings->call[UBL_CUBLAS] = ublas_load_driver("/panfs/panasas01/cosc/db0763/ublas/build/src/drivers/cublas/libublas-driver-cublas.so"); 
+	settings->call[UBL_CUBLAS] = ublas_load_driver("./src/drivers/cublas/libublas-driver-cublas.so"); 
 	settings->call[UBL_CUBLAS][UBF_INIT](&settings->libctx[UBL_CUBLAS]);
 #endif
 #if defined(WITH_MKL)
-	settings->call[UBL_MKL] = ublas_load_driver("/panfs/panasas01/cosc/db0763/ublas/build/src/drivers/mkl/libublas-driver-mkl.so");
+	settings->call[UBL_MKL] = ublas_load_driver("./src/drivers/mkl/libublas-driver-mkl.so");
 	settings->call[UBL_MKL][UBF_INIT](&settings->libctx[UBL_MKL]);
 #endif
 #if defined(WITH_PLASMA)
-	settings->call[UBL_PLASMA] = ublas_load_driver("/panfs/panasas01/cosc/db0763/ublas/build/src/drivers/plasma/libublas-driver-plasma.so");
+	settings->call[UBL_PLASMA] = ublas_load_driver("./src/drivers/plasma/libublas-driver-plasma.so");
 	settings->call[UBL_PLASMA][UBF_INIT](&settings->libctx[UBL_PLASMA]);
 #endif
 
@@ -56,10 +56,10 @@ int ublas_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, 
 		input[1] = c->rows;
 		fann_type *calc_out = fann_run(_ub_settings->ann, input);
 
-		if (calc_out[1] > calc_out[0])
-			_ub_settings->call[UBL_MKL][UBF_GEMM](_ub_settings->libctx[UBL_MKL], a, b, c, alpha, beta);
-		else
-			_ub_settings->call[UBL_ATLAS][UBF_GEMM](_ub_settings->libctx[UBL_ATLAS], a, b, c, alpha, beta);
+		// if (calc_out[1] > calc_out[0])
+		// 	_ub_settings->call[UBL_MKL][UBF_GEMM](_ub_settings->libctx[UBL_MKL], a, b, c, alpha, beta);
+		// else
+		// 	_ub_settings->call[UBL_ATLAS][UBF_GEMM](_ub_settings->libctx[UBL_ATLAS], a, b, c, alpha, beta);
 
 		// if (calc_out[0] > calc_out[1] && calc_out[0] > calc_out[2])
 		// 	return _ubl_atlas_gemm(a, b, c, alpha, beta);
