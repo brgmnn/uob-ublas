@@ -18,7 +18,7 @@ typedef enum {
 /*  An enumeration for specifying the underlying library to use or to auto select the
  *  library used. */
 typedef enum {
-	UBL_AUTO,
+	UBL_AUTO = 0,
 
 #if defined(WITH_ATLAS)
     UBL_ATLAS,

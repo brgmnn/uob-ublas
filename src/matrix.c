@@ -36,16 +36,16 @@ int ublas_matrix_equal(ublas_matrix *a, ublas_matrix *b) {
 void ublas_matrix_print(ublas_matrix *a) {
 	if (a->type == DOUBLE) {
 		double *da = (double*)a->cells;
-		for (int i=0; i<a->rows; i++) {
-			for (int j=0; j<a->cols; j++)
-				printf("%f ", da[i*a->cols+j]);
+		for (int i=0; i<a->cols; i++) {
+			for (int j=0; j<a->rows; j++)
+				printf("%.1f ", da[i*a->rows+j]);
 			printf("\n");
 		}
 	} else {
 		float *da = (float*)a->cells;
-		for (int i=0; i<a->rows; i++) {
-			for (int j=0; j<a->cols; j++)
-				printf("%f ", da[i*a->cols+j]);
+		for (int i=0; i<a->cols; i++) {
+			for (int j=0; j<a->rows; j++)
+				printf("%.1f ", da[i*a->rows+j]);
 			printf("\n");
 		}
 	}

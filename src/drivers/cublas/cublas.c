@@ -18,17 +18,17 @@ int ubf_gemm(void *ctx, ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, doubl
 		cudaMalloc((void**)&dev_b, b->rows*b->cols*sizeof(float));
 		cudaMalloc((void**)&dev_c, c->rows*c->cols*sizeof(float));
 
-		cublasSetMatrix(a->rows, a->cols, sizeof(float), (float*)a->cells, a->cols, dev_a, a->cols);
-		cublasSetMatrix(b->rows, b->cols, sizeof(float), (float*)b->cells, b->cols, dev_b, b->cols);
-		cublasSetMatrix(c->rows, c->cols, sizeof(float), (float*)c->cells, c->cols, dev_c, c->cols);
+		cublasSetMatrix(a->rows, a->cols, sizeof(float), (float*)a->cells, a->rows, dev_a, a->rows);
+		cublasSetMatrix(b->rows, b->cols, sizeof(float), (float*)b->cells, b->rows, dev_b, b->rows);
+		cublasSetMatrix(c->rows, c->cols, sizeof(float), (float*)c->cells, c->rows, dev_c, c->rows);
 	
 		float f_alpha = (float)alpha, f_beta = (float)beta;
-		cublasSgemm(context->handle, CUBLAS_OP_N, CUBLAS_OP_N, a->rows, b->cols,
-			a->cols, &f_alpha, dev_a, a->cols, dev_b, b->cols, &f_beta,
-			dev_c, c->cols);
+		cublasSgemm(context->handle, CUBLAS_OP_N, CUBLAS_OP_N, c->rows, c->cols,
+			a->cols, &f_alpha, dev_a, a->rows, dev_b, b->rows, &f_beta,
+			dev_c, c->rows);
 		cudaDeviceSynchronize();
 
-		cublasGetMatrix(c->rows, c->cols, sizeof(float), dev_c, c->cols, (float*)c->cells, c->cols);
+		cublasGetMatrix(c->rows, c->cols, sizeof(float), dev_c, c->rows, (float*)c->cells, c->rows);
 		
 		cudaFree(dev_a);
 		cudaFree(dev_b);

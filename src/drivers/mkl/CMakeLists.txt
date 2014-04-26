@@ -9,7 +9,7 @@ CMAKE_FORCE_C_COMPILER(icc "Intel C Compiler")
 # CMAKE_FORCE_CXX_COMPILER(icpc "Intel C++ Compiler")
 # CMAKE_FORCE_Fortran_COMPILER(ifort "Intel Fortran Compiler")
 
-add_definitions(-std=gnu99 -D BUILD_DRIVER)
+add_definitions(-std=gnu99 -D BUILD_DRIVER -fpic)
 set (CMAKE_SHARED_LINKER_FLAGS "-Bsymbolic") 
 
 string(REPLACE ":" ";" env-inc "$ENV{INCLUDE}")

@@ -4,7 +4,7 @@ cmake_policy(SET CMP0012 OLD)
 
 project(uBLAS-driver-plasma)
 
-add_definitions(-std=gnu99 -D BUILD_DRIVER -fPIC)
+add_definitions(-std=gnu99 -D BUILD_DRIVER -fpic)
 
 string(REPLACE ":" ";" env-inc "$ENV{INCLUDE}")
 string(REPLACE ":" ";" env-lib "$ENV{LD_LIBRARY_PATH}")
@@ -23,11 +23,13 @@ set(driver-src
     plasma.c
 )
 
-enable_language(Fortran)
-#add_library(ublas-driver-plasma SHARED ${driver-src})
-add_executable(ublas-driver-plasma ${driver-src})
+#set(CMAKE_C_LINK_FLAGS "-fPIC")
 
+#enable_language(Fortran)
+add_library(ublas-driver-plasma SHARED ${driver-src})
+#add_executable(ublas-driver-plasma ${driver-src})
+
+#target_link_libraries(ublas-driver-plasma plasma coreblasqw coreblas plasma quark cblas atlas lapacke tmg lapack pthread m)
 target_link_libraries(ublas-driver-plasma plasma coreblasqw coreblas plasma quark cblas atlas lapacke tmg lapack pthread m)
-#target_link_libraries(ublas-driver-plasma plasma lapack tmglib f77blas cblas atlas lapacke coreblas pthread m)
-set_target_properties(ublas-driver-plasma PROPERTIES LINKER_LANGUAGE Fortran)
+#set_target_properties(ublas-driver-plasma PROPERTIES LINKER_LANGUAGE Fortran)
 

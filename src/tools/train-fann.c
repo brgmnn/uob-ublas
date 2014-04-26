@@ -6,7 +6,7 @@ int main() {
 	printf("Neural Network training\n");
 
 	const unsigned int num_input = 2;
-    const unsigned int num_output = 2;
+    const unsigned int num_output = 4;
     const unsigned int num_layers = 4;
     const unsigned int num_neurons_hidden = 50;
     const float desired_error = (const float) 0.01;
@@ -24,7 +24,7 @@ int main() {
     fann_set_activation_function_hidden(ann, FANN_SIGMOID_SYMMETRIC);
     fann_set_activation_function_output(ann, FANN_SIGMOID_SYMMETRIC);
 
-    struct fann_train_data *data = fann_read_train_from_file("../atlas-mkl.data");
+    struct fann_train_data *data = fann_read_train_from_file("../training.data");
     // fann_set_scaling_params(ann, data, -1, 1, -1, 1);
 
     // fann_train_on_file(ann, "../atlas-plasma.data", max_epochs, epochs_between_reports, desired_error);
@@ -32,7 +32,7 @@ int main() {
     fann_train_on_data(ann, data, max_epochs, epochs_between_reports, desired_error);
     fann_destroy_train(data);
 
-    fann_save(ann, "../atlas-mkl.net");
+    fann_save(ann, "../neural.net");
 
     fann_destroy(ann);
 
