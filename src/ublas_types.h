@@ -2,6 +2,7 @@
 #define UBLAS_TYPES_H
 
 #include <fann/fann.h>
+#include "ublas_constants.h"
 
 typedef void (*func)();
 

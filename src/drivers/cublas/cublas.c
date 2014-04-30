@@ -50,4 +50,6 @@ int ubf_gemm(void *ctx, ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, doubl
 int ubf_free(void *ctx) {
 	libcontext *context = (libcontext*)ctx;
 	cublasDestroy(context->handle);
+	free(context);
+	return 0;
 }

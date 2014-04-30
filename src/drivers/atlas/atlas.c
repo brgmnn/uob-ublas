@@ -6,7 +6,6 @@ int ubf_init(void **ctx) {
 }
 
 int ubf_gemm(void *ctx, ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, double beta) {
-	// printf("using atlas\n");
 	ublas_type type = a->type;
 
 	if (type == SINGLE)

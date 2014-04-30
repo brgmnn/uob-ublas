@@ -8,6 +8,10 @@ option(with-atlas "Atlas" On)
 option(with-cublas "CuBLAS" Off)
 option(with-mkl "MKL" Off)
 option(with-plasma "Plasma" Off)
+
+option(small-matrix-threshold "SmallMatrixThreshold" 1000000)
+option(small-matrix-lib "SmallMatrixLibrary" "Atlas")
+
 add_definitions(-std=gnu99)
 
 

@@ -42,23 +42,25 @@ int ublas_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, 
 
 	if (_ub_settings->library == UBL_AUTO) {
 		reset = 1;
-		// if (1)
-		// 	return _ubl_plasma_gemm(a, b, c, alpha, beta);
-		// else
-		// 	return _ubl_cblas_gemm(a, b, c, alpha, beta);
 
-		fann_type input[2];
-		input[0] = c->cols;
-		input[1] = c->rows;
-		float *out = fann_run(_ub_settings->ann, input);
+		// preliminary matrix heuristic size stuff
+		if (a->cols*c->rows*c->cols < UBLAS_HEURISTIC_THRESHOLD) {
+			_ub_settings->library = UBLAS_SMALL_MATRIX_LIB; 
+		} else {
+			// else we use the neural network for all other cases.
+			fann_type input[2];
+			input[0] = c->cols;
+			input[1] = c->rows;
+			float *out = fann_run(_ub_settings->ann, input);
 
-		ublas_library libbest = UBL_AUTO;
-		float out_best = FLT_MIN;
+			ublas_library libbest = UBL_AUTO;
+			float out_best = FLT_MIN;
 
-		for (int i=1; i<(int)UBL_COUNT; i++) {
-			if (out[i-1] > out_best) {
-				_ub_settings->library = (ublas_library)i;
-				out_best = out[i-1];
+			for (int i=1; i<(int)UBL_COUNT; i++) {
+				if (out[i-1] > out_best) {
+					_ub_settings->library = (ublas_library)i;
+					out_best = out[i-1];
+				}
 			}
 		}
 	}
