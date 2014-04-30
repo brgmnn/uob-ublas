@@ -36,7 +36,6 @@ set(ublas-src
     src/matrix.c
     src/tests.c
     src/utils.c
-    src/lib/tpl.c
 )
 
 add_library(ublas STATIC ${ublas-src})
