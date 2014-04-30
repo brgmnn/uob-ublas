@@ -2,6 +2,8 @@
 
 ublas_settings *_ub_settings;
 
+/*		UBLAS initialisation
+ *---------------------------------------------------------------------------*/
 void ublas_init(ublas_settings *settings) {
 	_ub_settings = settings;
 
@@ -9,7 +11,6 @@ void ublas_init(ublas_settings *settings) {
 	settings->libctx = calloc(UBL_COUNT, sizeof(void*));
 
 #if defined(WITH_ATLAS)
-	// settings->call_atlas = ublas_load_atlas("path/to/atlas");
 	settings->call[UBL_ATLAS] = ublas_load_driver("./src/drivers/atlas/libublas-driver-atlas.so");
 	settings->call[UBL_ATLAS][UBF_INIT](&settings->libctx[UBL_ATLAS]);
 #endif
@@ -29,10 +30,34 @@ void ublas_init(ublas_settings *settings) {
 	settings->ann = fann_create_from_file("../neural.net");
 }
 
+/*		UBLAS clean up
+ *---------------------------------------------------------------------------*/
 void ublas_free() {
+	_ub_settings = settings;
+
+#if defined(WITH_ATLAS)
+	settings->call[UBL_ATLAS][UBF_FREE](&settings->libctx[UBL_ATLAS]);
+#endif
+#if defined(WITH_CUBLAS)
+	settings->call[UBL_CUBLAS][UBF_FREE](&settings->libctx[UBL_CUBLAS]);
+#endif
+#if defined(WITH_MKL)
+	settings->call[UBL_MKL][UBF_FREE](&settings->libctx[UBL_MKL]);
+#endif
+#if defined(WITH_PLASMA)
+	settings->call[UBL_PLASMA][UBF_FREE](&settings->libctx[UBL_PLASMA]);
+#endif
 }
 
-int ublas_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, double beta) {
+/******************************************************************************
+ *	BLAS		Level 3
+ *****************************************************************************/
+
+/*		GEMM
+ *---------------------------------------------------------------------------*/
+int ublas_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c,
+		double alpha, double beta) {
+
 	if (a->cols != b->rows && a->rows != c->rows && b->cols != c->cols)
 		return (int)E_MISSMATCH_DIMENSIONS;
 	if (a->type != b->type && b->type != c->type)
@@ -93,8 +118,10 @@ int ublas_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, 
 	return 0;
 }
 
-// returns the library with the fastest time in an array of floats representing
-// execution time.
+/*		Fastest Floats
+ * returns the library with the fastest time in an array of floats representing
+ * execution time.
+ *---------------------------------------------------------------------------*/
 ublas_library ublas_ffastest(float *times) {
 	ublas_library libbest = UBL_AUTO;
 	float t_best = FLT_MAX;
@@ -109,8 +136,10 @@ ublas_library ublas_ffastest(float *times) {
 	return libbest;
 }
 
-// returns the library with the fastest time in an array of doubles
-// representing execution time.
+/*		Fastest Floats
+ * returns the library with the fastest time in an array of doubles
+ * representing execution time.
+ *---------------------------------------------------------------------------*/
 ublas_library ublas_dfastest(double *times) {
 	ublas_library libbest = UBL_AUTO;
 	double t_best = DBL_MAX;
