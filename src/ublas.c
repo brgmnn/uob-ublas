@@ -33,7 +33,7 @@ void ublas_init(ublas_settings *settings) {
 /*		UBLAS clean up
  *---------------------------------------------------------------------------*/
 void ublas_free() {
-	_ub_settings = settings;
+	ublas_settings *settings = _ub_settings;
 
 #if defined(WITH_ATLAS)
 	settings->call[UBL_ATLAS][UBF_FREE](&settings->libctx[UBL_ATLAS]);
@@ -47,6 +47,20 @@ void ublas_free() {
 #if defined(WITH_PLASMA)
 	settings->call[UBL_PLASMA][UBF_FREE](&settings->libctx[UBL_PLASMA]);
 #endif
+
+	// free the driver context table
+	for (int i=1; i<UBL_COUNT; i++) {
+		free(settings->libctx[i]);
+	}
+	free(settings->libctx);
+
+	// free the call table
+	for (int i=1; i<(int)UBL_COUNT; i++) {
+		for (int j=0; j<(int)UBF_COUNT; j++) {
+			// free(settings->call[i][j]);
+		}
+		free(settings->call[i]);
+	}
 }
 
 /******************************************************************************
@@ -73,7 +87,7 @@ int ublas_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c,
 			_ub_settings->library = UBLAS_SMALL_MATRIX_LIB; 
 		} else {
 			// else we use the neural network for all other cases.
-			fann_type input[2];
+			float input[2];
 			input[0] = c->cols;
 			input[1] = c->rows;
 			float *out = fann_run(_ub_settings->ann, input);

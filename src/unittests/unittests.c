@@ -261,5 +261,7 @@ int main(int argc, char *argv[]) {
 
 	sput_finish_testing();
 
+	ublas_free();
+
 	return sput_get_return_value();
 }
