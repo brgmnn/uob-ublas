@@ -6,8 +6,6 @@
 sp_profile_t* tp;
 
 int main() {
-	printf("run\n");
-
 	ublas_settings settings;
 	settings.cores = 8;
 	settings.library = UBL_AUTO;
@@ -89,6 +87,8 @@ int main() {
 				ublas_gemm(a, b, c, 1.0, 0.0);
 			printf("%f\n", (sp_stop_timer(tp)/avgsize));
 		}
+
+		fflush(stdout);
 	}
 
 	return 0;

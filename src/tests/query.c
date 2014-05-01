@@ -20,7 +20,7 @@ int main() {
 			break;
 
 		float in[3] = {m, n, k};
-		qlib = ublas_query_ann(in);
+		qlib = ublas_query_ann(in, 3);
 
 #if defined(WITH_ATLAS)
 		if (qlib == UBL_ATLAS)

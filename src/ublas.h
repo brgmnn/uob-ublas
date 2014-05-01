@@ -23,7 +23,7 @@ void ublas_free();
 int ublas_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, double beta);
 
 
-ublas_library ublas_query_ann(float *input);
+ublas_library ublas_query_ann(float *input, size_t len);
 
 ublas_library ublas_ffastest(float *times);
 ublas_library ublas_dfastest(double *times);
