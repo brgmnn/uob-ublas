@@ -67,7 +67,7 @@ add_executable(unittests src/unittests/unittests.c)
 
 target_link_libraries(accuracy simpleprofiler ublas)
 target_link_libraries(query ublas)
-target_link_libraries(run ublas)
+target_link_libraries(run simpleprofiler ublas)
 target_link_libraries(train-fann simpleprofiler ublas)
 target_link_libraries(unittests ublas)
 

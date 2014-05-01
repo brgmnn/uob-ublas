@@ -3,6 +3,8 @@
 #include <ublas.h>
 #include <spflr/simple-profiler.h>
 
+sp_profile_t* tp;
+
 int main() {
 	printf("run\n");
 
@@ -10,6 +12,7 @@ int main() {
 	settings.cores = 8;
 	settings.library = UBL_AUTO;
 	ublas_init(&settings);
+	tp = sp_create_profile();
 
 	int m = 1, n = 1, k = 1, avgsize = 1;
 	float in[3] = {0, 0, 0};
@@ -50,21 +53,41 @@ int main() {
 #endif
 #if defined(WITH_CUBLAS)
 		if (!strncmp(slib, "cublas", 6)) {
-			printf("cublas!!!\n");
+			settings.library = UBL_CUBLAS;
+			ublas_gemm(a, b, c, 1.0, 0.0);
+			sp_start_timer(tp);
+			for (m=0; m<avgsize; m++)
+				ublas_gemm(a, b, c, 1.0, 0.0);
+			printf("%f\n", (sp_stop_timer(tp)/avgsize));
 		}
 #endif
 #if defined(WITH_MKL)
 		if (!strncmp(slib, "mkl", 3)) {
-			printf("mkl!!!\n");
+			settings.library = UBL_MKL;
+			ublas_gemm(a, b, c, 1.0, 0.0);
+			sp_start_timer(tp);
+			for (m=0; m<avgsize; m++)
+				ublas_gemm(a, b, c, 1.0, 0.0);
+			printf("%f\n", (sp_stop_timer(tp)/avgsize));
 		}
 #endif
 #if defined(WITH_PLASMA)
 		if (!strncmp(slib, "plasma", 6)) {
-			printf("plasma!!!\n");
+			settings.library = UBL_PLASMA;
+			ublas_gemm(a, b, c, 1.0, 0.0);
+			sp_start_timer(tp);
+			for (m=0; m<avgsize; m++)
+				ublas_gemm(a, b, c, 1.0, 0.0);
+			printf("%f\n", (sp_stop_timer(tp)/avgsize));
 		}
 #endif
 		if (!strncmp(slib, "auto", 4)) {
-			printf("auto!!!\n");
+			settings.library = UBL_AUTO;
+			ublas_gemm(a, b, c, 1.0, 0.0);
+			sp_start_timer(tp);
+			for (m=0; m<avgsize; m++)
+				ublas_gemm(a, b, c, 1.0, 0.0);
+			printf("%f\n", (sp_stop_timer(tp)/avgsize));
 		}
 	}
 
