@@ -11,7 +11,7 @@ int main() {
 	tp = sp_create_profile();
 
 	ublas_settings settings;
-	settings.cores = 16;
+	settings.cores = 8;
 	settings.library = UBL_AUTO;
 	ublas_init(&settings);
 
@@ -22,7 +22,7 @@ int main() {
 	int mul = 1;
 	int step = 8;
 	int avgsize = 10;
-	int start = 32;
+	int start = 8;
 
 	int bc_cblas = 0;
 	int bc_plasma = 0;
@@ -40,22 +40,22 @@ int main() {
 	// 	for (int y=0; y<msize-2; y++) {
 
 	FILE *f = fopen("../training.data", "w");
-	fprintf(f, "%d 2 4\n\n", msize/step);
+	fprintf(f, "                               \n\n");
 
-	fprintf(f, "x,y,");
+	fprintf(stderr, "m,k,n,");
 #if defined(WITH_ATLAS)
-	fprintf(f, "atlas,");
+	fprintf(stderr, "atlas,");
 #endif
 #if defined(WITH_CUBLAS)
-	fprintf(f, "cublas,");
+	fprintf(stderr, "cublas,");
 #endif
 #if defined(WITH_MKL)
-	fprintf(f, "mkl,");
+	fprintf(stderr, "mkl,");
 #endif
 #if defined(WITH_PLASMA)
-	fprintf(f, "plasma,");
+	fprintf(stderr, "plasma,");
 #endif
-	fprintf(f, "ublas,");
+	fprintf(stderr, "ublas\n");
 
 	int nn_correct = 0;
 	int trials = 0;
@@ -64,21 +64,21 @@ int main() {
 	fann_type input[2];
 
 //	struct fann *ann = fann_create_from_file("../atlas-plasma-float.net");
-	fprintf(f, "x,y,");
 
-	int x, y, m;
-	for (x=start, y=start; x<=msize, y<=msize; x+=step, y+=step) {
+	int x, y, z, m;
+	for (x=start, y=start, z=start; x<=msize, y<=msize, z<=msize; x+=step, y+=step, z+=step) {
 	// for (x=start, y=16; x<=msize && y<=msize; x+=step) {
 	 // for (x=16, y=start; x<=msize, y<=msize; y+=step) {
-		printf("x=%4d y=%4d: ", mul*x, mul*y);
+		printf("m=%4d n=%4d k=%4d: ", mul*x, mul*z, mul*y);
 		fflush(stdout);
 
+		// x = m, y = k, z = n
 		a->rows = mul*x;
 		a->cols = mul*y;
 		b->rows = mul*y;
-		b->cols = mul*x;
+		b->cols = mul*z;
 		c->rows = mul*x;
-		c->cols = mul*x;
+		c->cols = mul*z;
 
 		input[0] = x;
 		input[1] = y;
@@ -133,7 +133,7 @@ int main() {
 		printf(" ---> %d", ublas_ffastest(libtime));
 
 		// print results to a csv file
-		fprintf(stderr, "%d,%d,", x, y);
+		fprintf(stderr, "%d,%d,%d,", x, y, z);
 		for (int i=0; i<UBL_COUNT-1; i++)
 			fprintf(stderr, "%f,", libtime[i]);
 		fprintf(stderr, "%f\n", t_ublas);
@@ -142,28 +142,8 @@ int main() {
         printf("\n");
 
 
-
-  //       printf("    ");
-		// for (int i=0; i<UBL_COUNT-1; i++)
-		// 	printf("%.5f, ", libtime[i]);
-  //       printf(" --- ublas = %.5f\n", t_ublas);
-
-		// calc_out = fann_run(ann, input);
-
-		// if (t_atlas < t_plasma && calc_out[0] > calc_out[1])
-		// 	nn_correct++;
-		// else if (t_atlas > t_plasma && calc_out[0] < calc_out[1])
-		// 	nn_correct++;
-
-		trials++;
-		// if (t_atlas < t_plasma) {
-		// 	bc_cblas++;
-        // } else {
-		// 	bc_plasma++;
-		// }
-
-
-		fprintf(f, "%d %d\n", mul*x, mul*y);
+        // generates the neural network file
+		fprintf(f, "%d %d %d\n", mul*x, mul*z, mul*y);
 		ublas_library bestlib = ublas_ffastest(libtime);
 		for (int i=1; i<UBL_COUNT; i++) {
 			if (i == bestlib)
@@ -172,32 +152,12 @@ int main() {
 				fprintf(f, "-1 ");
 		}
 		fprintf(f, "\n");
-
-		// if (fmax(t_atlas, t_mkl) == t_mkl)
-		// 	fprintf(f, "-1 1\n");
-		// else
-		// 	fprintf(f, "1 -1\n");
-		// if (fmin(t_atlas, t_gotoblas) == t_atlas && fmin(t_atlas, t_mkl) == t_atlas)
-		// 	fprintf(f, "1 -1 -1\n");
-		// else if (fmin(t_gotoblas, t_atlas) == t_gotoblas && fmin(t_gotoblas, t_mkl) == t_gotoblas)
-		// 	fprintf(f, "-1 1 -1\n");
-		// else
-		// 	fprintf(f, "-1 -1 1\n");
-
-
-        // if (x < msize/2)
-		// 	fprintf(f, "1 -1\n");
-		// else
-		// 	fprintf(f, "-1 1\n");
+		trials++;
 	}
 
-	// printf("cblas best choice:  %f\n", (double)bc_cblas *100/(bc_cblas+bc_plasma));
-	// printf("plasma best choice: %f\n", (double)bc_plasma*100/(bc_cblas+bc_plasma));
-	printf("Neural Network accuracy: %f\n", 100*((double)nn_correct/trials));
-
-	free(a);
-	free(b);
-	free(c);
+	fseek(f, 0, SEEK_SET);
+	fprintf(f, "%d 3 4", trials);
+	fclose(f);
 
 	ublas_free();
 }

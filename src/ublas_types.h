@@ -57,18 +57,18 @@ typedef struct {
 	func **call;
 	void **libctx;
 
-#if defined(WITH_ATLAS)
-	func call_atlas;
-#endif
-#if defined(WITH_CUBLAS)
-	func call_cublas;
-#endif
-#if defined(WITH_GOTOBLAS)
-	func call_gotoblas;
-#endif
-#if defined(WITH_MKL)
-	func call_mkl;
-#endif
+// #if defined(WITH_ATLAS)
+// 	func call_atlas;
+// #endif
+// #if defined(WITH_CUBLAS)
+// 	func call_cublas;
+// #endif
+// #if defined(WITH_GOTOBLAS)
+// 	func call_gotoblas;
+// #endif
+// #if defined(WITH_MKL)
+// 	func call_mkl;
+// #endif
 
 } ublas_settings;
 

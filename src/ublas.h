@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <float.h>
+#include <stdio.h>
 
 #if !defined(WITH_ATLAS) && !defined(WITH_CUBLAS) && !defined(WITH_MKL) && !defined(WITH_PLASMA)
 #pragma GCC error "No blas libraries!"
@@ -18,7 +19,11 @@
 void ublas_init(ublas_settings *settings);
 void ublas_free();
 
+
 int ublas_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c, double alpha, double beta);
+
+
+ublas_library ublas_query_ann(float *input);
 
 ublas_library ublas_ffastest(float *times);
 ublas_library ublas_dfastest(double *times);

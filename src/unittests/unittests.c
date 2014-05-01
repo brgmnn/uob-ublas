@@ -44,6 +44,10 @@ static void test_matrix_equal() {
 	sput_fail_unless(ublas_matrix_equal(a, b) == 3, "equal(a, b) == 3");
 	sput_fail_unless(ublas_matrix_equal(b, b) == 0, "equal(b, b) == 0");
 	sput_fail_unless(ublas_matrix_equal(a, a2) == 0, "equal(a, a2) == 0");
+
+	ublas_free_matrix(a);
+	ublas_free_matrix(b);
+	ublas_free_matrix(a2);
 }
 
 static void test_gemm_1() {

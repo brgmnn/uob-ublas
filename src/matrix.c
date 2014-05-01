@@ -9,6 +9,25 @@ ublas_matrix* ublas_new_matrix(int rows, int cols, void *data, ublas_type type) 
 	return mat;
 }
 
+ublas_matrix* ublas_new_matrix2(int rows, int cols, ublas_type type) {
+	ublas_matrix *mat = malloc(sizeof(ublas_matrix));
+	mat->rows = rows;
+	mat->cols = cols;
+	mat->type = type;
+
+	if (type == SINGLE)
+		mat->cells = malloc(rows*cols*sizeof(float));
+	else
+		mat->cells = malloc(rows*cols*sizeof(double));
+
+	return mat;
+}
+
+
+void ublas_free_matrix(ublas_matrix *a) {
+	free(a);
+}
+
 int ublas_matrix_equal(ublas_matrix *a, ublas_matrix *b) {
 	if (a->rows != b->rows)
 		return -1;

@@ -48,19 +48,19 @@ void ublas_free() {
 	settings->call[UBL_PLASMA][UBF_FREE](&settings->libctx[UBL_PLASMA]);
 #endif
 
-	// free the driver context table
-	for (int i=1; i<UBL_COUNT; i++) {
-		free(settings->libctx[i]);
-	}
-	free(settings->libctx);
+	// // free the driver context table
+	// for (int i=1; i<UBL_COUNT; i++) {
+	// 	free(settings->libctx[i]);
+	// }
+	// free(settings->libctx);
 
-	// free the call table
-	for (int i=1; i<(int)UBL_COUNT; i++) {
-		for (int j=0; j<(int)UBF_COUNT; j++) {
-			// free(settings->call[i][j]);
-		}
-		free(settings->call[i]);
-	}
+	// // free the call table
+	// for (int i=1; i<(int)UBL_COUNT; i++) {
+	// 	for (int j=0; j<(int)UBF_COUNT; j++) {
+	// 		// free(settings->call[i][j]);
+	// 	}
+	// 	free(settings->call[i]);
+	// }
 }
 
 /******************************************************************************
@@ -77,59 +77,78 @@ int ublas_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c,
 	if (a->type != b->type && b->type != c->type)
 		return (int)E_MISSMATCH_TYPES;
 
-	int info, reset = 0;
+	int info, reset = 0, oops = 1;
 
 	if (_ub_settings->library == UBL_AUTO) {
 		reset = 1;
 
 		// preliminary matrix heuristic size stuff
-		if (a->cols*c->rows*c->cols < UBLAS_HEURISTIC_THRESHOLD) {
-			_ub_settings->library = UBLAS_SMALL_MATRIX_LIB; 
-		} else {
+		// if (a->cols*c->rows*c->cols < UBLAS_HEURISTIC_THRESHOLD) {
+		// 	_ub_settings->library = UBLAS_SMALL_MATRIX_LIB; 
+		// } else {
 			// else we use the neural network for all other cases.
-			float input[2];
-			input[0] = c->cols;
-			input[1] = c->rows;
-			float *out = fann_run(_ub_settings->ann, input);
+			float input[3] = {c->cols, c->rows, a->cols};
+			// input[0] = c->cols;
+			// input[1] = c->rows;
+			// input[2] = a->cols;
 
-			ublas_library libbest = UBL_AUTO;
-			float out_best = FLT_MIN;
-
-			for (int i=1; i<(int)UBL_COUNT; i++) {
-				if (out[i-1] > out_best) {
-					_ub_settings->library = (ublas_library)i;
-					out_best = out[i-1];
-				}
-			}
-		}
+			_ub_settings->library = ublas_query_ann(input);
+		// }
 	}
 
 #if defined(WITH_ATLAS)
 	if (_ub_settings->library == UBL_ATLAS) {
 		// return _ubl_atlas_gemm(a, b, c, alpha, beta);
     	_ub_settings->call[UBL_ATLAS][UBF_GEMM](_ub_settings->libctx[UBL_ATLAS], a, b, c, alpha, beta);
+    	oops = 0;
 	}
 #endif
 #if defined(WITH_CUBLAS)
 	else if (_ub_settings->library == UBL_CUBLAS) {
     	_ub_settings->call[UBL_CUBLAS][UBF_GEMM](_ub_settings->libctx[UBL_CUBLAS], a, b, c, alpha, beta);
+    	oops = 0;
 	}
 #endif
 #if defined(WITH_MKL)
     else if (_ub_settings->library == UBL_MKL) {
     	_ub_settings->call[UBL_MKL][UBF_GEMM](_ub_settings->libctx[UBL_MKL], a, b, c, alpha, beta);
+    	oops = 0;
     }
 #endif
 #if defined(WITH_PLASMA)
 	else if (_ub_settings->library == UBL_PLASMA) {
     	_ub_settings->call[UBL_PLASMA][UBF_GEMM](_ub_settings->libctx[UBL_PLASMA], a, b, c, alpha, beta);
+    	oops = 0;
 	}
 #endif
 
 	if (reset)
 		_ub_settings->library = UBL_AUTO;
+
+	if (oops)
+		printf("FAILED TO USE A BLAS LIBRARY!!! WTF\n");
 	
 	return 0;
+}
+
+/*		Query ANN
+ * query the artificial neural network with some given inputs and get the
+ * library it would select for use.
+ *---------------------------------------------------------------------------*/
+ublas_library ublas_query_ann(float *input) {
+	ublas_library libbest = UBL_AUTO;
+	float out_best = FLT_MIN;
+
+	float *out = fann_run(_ub_settings->ann, input);
+	for (int i=1; i<(int)UBL_COUNT; i++) {
+		// printf("%f, ", out[i-1]);
+		if (out[i-1] > out_best) {
+			libbest = (ublas_library)i;
+			out_best = out[i-1];
+		}
+	}
+
+	return libbest;
 }
 
 /*		Fastest Floats
