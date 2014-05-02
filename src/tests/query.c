@@ -2,8 +2,6 @@
 #include <ublas.h>
 
 int main() {
-	printf("query\n");
-
 	ublas_settings settings;
 	settings.cores = 8;
 	settings.library = UBL_AUTO;
@@ -38,6 +36,7 @@ int main() {
 		if (qlib == UBL_PLASMA)
 			printf("plasma\n");
 #endif
+		fflush(stdout);
 	}
 
 	return 0;

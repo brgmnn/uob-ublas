@@ -129,11 +129,11 @@ ublas_library ublas_query_ann(float *input, size_t len) {
 	for (int i=0; i<len; ++i)
 		prod *= input[i];
 
-	if (prod < UBLAS_HEURISTIC_THRESHOLD) {
-		// if we are below some threshold where there is no point in using the
-		// neural network
-		return UBLAS_SMALL_MATRIX_LIB;
-	} else {
+	// if (prod < UBLAS_HEURISTIC_THRESHOLD) {
+	// 	// if we are below some threshold where there is no point in using the
+	// 	// neural network
+	// 	return UBLAS_SMALL_MATRIX_LIB;
+	// } else {
 		// otherwise use the neural network
 		ublas_library libbest = UBL_AUTO;
 		float out_best = FLT_MIN;
@@ -146,7 +146,7 @@ ublas_library ublas_query_ann(float *input, size_t len) {
 			}
 		}
 		return libbest;
-	}
+	// }
 }
 
 /*		Fastest Floats

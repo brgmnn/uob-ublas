@@ -12,7 +12,8 @@ int main() {
 	ublas_init(&settings);
 	tp = sp_create_profile();
 
-	int m = 1, n = 1, k = 1, avgsize = 1;
+	int trial = 1;
+	int s, m = 1, n = 1, k = 1, avgsize = 1;
 	float in[3] = {0, 0, 0};
 	float exectime;
 	ublas_library qlib;
@@ -44,7 +45,7 @@ int main() {
 			settings.library = UBL_ATLAS;
 			ublas_gemm(a, b, c, 1.0, 0.0);
 			sp_start_timer(tp);
-			for (m=0; m<avgsize; m++)
+			for (s=0; s<avgsize; s++)
 				ublas_gemm(a, b, c, 1.0, 0.0);
 			printf("%f\n", (sp_stop_timer(tp)/avgsize));
 		}
@@ -54,7 +55,7 @@ int main() {
 			settings.library = UBL_CUBLAS;
 			ublas_gemm(a, b, c, 1.0, 0.0);
 			sp_start_timer(tp);
-			for (m=0; m<avgsize; m++)
+			for (s=0; s<avgsize; s++)
 				ublas_gemm(a, b, c, 1.0, 0.0);
 			printf("%f\n", (sp_stop_timer(tp)/avgsize));
 		}
@@ -64,7 +65,7 @@ int main() {
 			settings.library = UBL_MKL;
 			ublas_gemm(a, b, c, 1.0, 0.0);
 			sp_start_timer(tp);
-			for (m=0; m<avgsize; m++)
+			for (s=0; s<avgsize; s++)
 				ublas_gemm(a, b, c, 1.0, 0.0);
 			printf("%f\n", (sp_stop_timer(tp)/avgsize));
 		}
@@ -74,7 +75,7 @@ int main() {
 			settings.library = UBL_PLASMA;
 			ublas_gemm(a, b, c, 1.0, 0.0);
 			sp_start_timer(tp);
-			for (m=0; m<avgsize; m++)
+			for (s=0; s<avgsize; s++)
 				ublas_gemm(a, b, c, 1.0, 0.0);
 			printf("%f\n", (sp_stop_timer(tp)/avgsize));
 		}
@@ -83,12 +84,13 @@ int main() {
 			settings.library = UBL_AUTO;
 			ublas_gemm(a, b, c, 1.0, 0.0);
 			sp_start_timer(tp);
-			for (m=0; m<avgsize; m++)
+			for (s=0; s<avgsize; s++)
 				ublas_gemm(a, b, c, 1.0, 0.0);
 			printf("%f\n", (sp_stop_timer(tp)/avgsize));
 		}
 
 		fflush(stdout);
+		fprintf(stderr, "-- trial %4d - (%3d,%3d,%3d)\n", trial++, m, k, n);
 	}
 
 	return 0;
