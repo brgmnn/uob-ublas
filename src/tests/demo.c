@@ -25,12 +25,12 @@ int main() {
 	tp = sp_create_profile();
 
 	int trial = 1;
-	int s, avgsize = 1, m = 1, n = 1, k = 1;
+	int s, avgsize = 1, m = 1024, n = 1024, k = 1024;
 	float in[3] = {0, 0, 0};
 	float exectime;
 	ublas_library qlib;
 	
-	scanf("%d %d %d %d", &avgsize, &m, &k, &n);
+	// scanf("%d %d %d %d", &avgsize, &m, &k, &n);
 
 	ublas_matrix *a = ublas_new_matrix2(m, k, SINGLE);
 	ublas_matrix *b = ublas_new_matrix2(k, n, SINGLE);
@@ -40,7 +40,7 @@ int main() {
 	while (1) {
 		m = 0; n = 0; k = 0;
 		char slib[10];
-		scanf("%10s %d %d %d", slib, &m, &k, &n);
+		scanf("%d %d %d", &m, &k, &n);
 
 		if (m <= 0 || n <= 0 || k <= 0 || !strncmp(slib, "stop", 4))
 			break;
@@ -56,61 +56,51 @@ int main() {
 		avgsize = favgsize(m, k, n);
 
 #if defined(WITH_ATLAS)
-		if (!strncmp(slib, "atlas", 5)) {
-			settings.library = UBL_ATLAS;
+		settings.library = UBL_ATLAS;
+		ublas_gemm(a, b, c, 1.0, 0.0);
+		sp_start_timer(tp);
+		for (s=0; s<avgsize; s++)
 			ublas_gemm(a, b, c, 1.0, 0.0);
-			sp_start_timer(tp);
-			for (s=0; s<avgsize; s++)
-				ublas_gemm(a, b, c, 1.0, 0.0);
-			tm = (sp_stop_timer(tp)/avgsize);
-			printf("%f\n", tm);
-		}
+		tm = (sp_stop_timer(tp)/avgsize);
+		printf("atlas = %f\n", tm);
 #endif
 #if defined(WITH_CUBLAS)
-		if (!strncmp(slib, "cublas", 6)) {
-			settings.library = UBL_CUBLAS;
+		settings.library = UBL_CUBLAS;
+		ublas_gemm(a, b, c, 1.0, 0.0);
+		sp_start_timer(tp);
+		for (s=0; s<avgsize; s++)
 			ublas_gemm(a, b, c, 1.0, 0.0);
-			sp_start_timer(tp);
-			for (s=0; s<avgsize; s++)
-				ublas_gemm(a, b, c, 1.0, 0.0);
-			tm = (sp_stop_timer(tp)/avgsize);
-			printf("%f\n", tm);
-		}
+		tm = (sp_stop_timer(tp)/avgsize);
+		printf("cublas = %f\n", tm);
 #endif
 #if defined(WITH_MKL)
-		if (!strncmp(slib, "mkl", 3)) {
-			settings.library = UBL_MKL;
+		settings.library = UBL_MKL;
+		ublas_gemm(a, b, c, 1.0, 0.0);
+		sp_start_timer(tp);
+		for (s=0; s<avgsize; s++)
 			ublas_gemm(a, b, c, 1.0, 0.0);
-			sp_start_timer(tp);
-			for (s=0; s<avgsize; s++)
-				ublas_gemm(a, b, c, 1.0, 0.0);
-			tm = (sp_stop_timer(tp)/avgsize);
-			printf("%f\n", tm);
-		}
+		tm = (sp_stop_timer(tp)/avgsize);
+		printf("mkl = %f\n", tm);
 #endif
 #if defined(WITH_PLASMA)
-		if (!strncmp(slib, "plasma", 6)) {
-			settings.library = UBL_PLASMA;
+		settings.library = UBL_PLASMA;
+		ublas_gemm(a, b, c, 1.0, 0.0);
+		sp_start_timer(tp);
+		for (s=0; s<avgsize; s++)
 			ublas_gemm(a, b, c, 1.0, 0.0);
-			sp_start_timer(tp);
-			for (s=0; s<avgsize; s++)
-				ublas_gemm(a, b, c, 1.0, 0.0);
-			tm = (sp_stop_timer(tp)/avgsize);
-			printf("%f\n", tm);
-		}
+		tm = (sp_stop_timer(tp)/avgsize);
+		printf("plasma = %f\n", tm);
 #endif
-		if (!strncmp(slib, "ublas", 4)) {
-			settings.library = UBL_AUTO;
+		settings.library = UBL_AUTO;
+		ublas_gemm(a, b, c, 1.0, 0.0);
+		sp_start_timer(tp);
+		for (s=0; s<avgsize; s++)
 			ublas_gemm(a, b, c, 1.0, 0.0);
-			sp_start_timer(tp);
-			for (s=0; s<avgsize; s++)
-				ublas_gemm(a, b, c, 1.0, 0.0);
-			tm = (sp_stop_timer(tp)/avgsize);
-			printf("%f\n", tm);
-		}
+		tm = (sp_stop_timer(tp)/avgsize);
+		printf("\nublas = %f\n", tm);
 
 		fflush(stdout);
-		fprintf(stderr, "-- trial %4d - %6s - (%3d,%3d,%3d)\n", trial++, slib, m, k, n);
+		// fprintf(stderr, "-- trial %4d - %6s - (%3d,%3d,%3d)\n", trial++, slib, m, k, n);
 	}
 
 	return 0;

@@ -87,7 +87,6 @@ int ublas_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c,
 
 #if defined(WITH_ATLAS)
 	if (_ub_settings->library == UBL_ATLAS) {
-		// return _ubl_atlas_gemm(a, b, c, alpha, beta);
     	_ub_settings->call[UBL_ATLAS][UBF_GEMM](_ub_settings->libctx[UBL_ATLAS], a, b, c, alpha, beta);
     	oops = 0;
 	}
@@ -114,7 +113,7 @@ int ublas_gemm(ublas_matrix *a, ublas_matrix *b, ublas_matrix *c,
 	if (reset)
 		_ub_settings->library = UBL_AUTO;
 
-	if (oops)
+	if (oops > 0)
 		printf("FAILED TO USE A BLAS LIBRARY!!! WTF\n");
 	
 	return 0;
@@ -129,24 +128,24 @@ ublas_library ublas_query_ann(float *input, size_t len) {
 	for (int i=0; i<len; ++i)
 		prod *= input[i];
 
-	// if (prod < UBLAS_HEURISTIC_THRESHOLD) {
-	// 	// if we are below some threshold where there is no point in using the
-	// 	// neural network
-	// 	return UBLAS_SMALL_MATRIX_LIB;
-	// } else {
+	if (prod < UBLAS_HEURISTIC_THRESHOLD) {
+		// if we are below some threshold where there is no point in using the
+		// neural network
+		return UBLAS_SMALL_MATRIX_LIB;
+	} else {
 		// otherwise use the neural network
-		ublas_library libbest = UBL_AUTO;
-		float out_best = FLT_MIN;
+		ublas_library libbest = UBLAS_DEFAULT_LIB;
+		float out_best = -2.0f;
 
 		float *out = fann_run(_ub_settings->ann, input);
 		for (int i=1; i<(int)UBL_COUNT; i++) {
-			if (out[i-1] > out_best) {
+			if (out[i-1] >= out_best) {
 				libbest = (ublas_library)i;
 				out_best = out[i-1];
 			}
 		}
 		return libbest;
-	// }
+	}
 }
 
 /*		Fastest Floats

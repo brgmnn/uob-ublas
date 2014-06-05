@@ -7,6 +7,18 @@
 
 sp_profile_t* tp;
 
+int favgsize(unsigned long m, unsigned long k, unsigned long n) {
+	unsigned long prod = m*k*n;
+
+	if (prod < 1000000ul)
+		return 100; // square 100
+	if (prod < 27000000ul)
+		return 30;	// square 300
+	if (prod < 216000000ul)
+		return 4;	// square 600
+	return 1;
+}
+
 int main() {
 	tp = sp_create_profile();
 
@@ -20,7 +32,7 @@ int main() {
 
 	int msize = 512;
 	int mul = 1;
-	int step = 8;
+	int step = 4;
 	int avgsize = 10;
 	int start = 8;
 
@@ -66,9 +78,10 @@ int main() {
 //	struct fann *ann = fann_create_from_file("../atlas-plasma-float.net");
 
 	int x, y, z, m;
-	for (x=start, y=start, z=start; x<=msize, y<=msize, z<=msize; x+=step, y+=step, z+=step) {
-	// for (x=start, y=16; x<=msize && y<=msize; x+=step) {
-	 // for (x=16, y=start; x<=msize, y<=msize; y+=step) {
+	// for (x=start, y=start, z=start; x<=msize, y<=msize, z<=msize; x+=step, y+=step, z+=step) {
+	// x = 32;
+	y = 32;
+	for (x=start, z=start; x<=msize, z<=msize; x+=step, z+=step) {
 		printf("m=%4d n=%4d k=%4d: ", mul*x, mul*z, mul*y);
 		fflush(stdout);
 
@@ -82,6 +95,8 @@ int main() {
 
 		input[0] = x;
 		input[1] = y;
+
+		avgsize = favgsize(x, y, z);
 
 #if defined(WITH_ATLAS)
         // Test CLBAS
