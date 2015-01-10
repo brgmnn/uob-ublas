@@ -1,5 +1,4 @@
 # Ultimate BLAS Library (UBLAS) #
-## University of Bristol ##
 
 UBLAS is a library which wraps several underlying BLAS libraries and at
 runtime selects the fastest library for a given function call and arguments.
